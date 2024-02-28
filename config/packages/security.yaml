@@ -1,3 +1,5 @@
+#INDENTATION IS IMPACTFUL AND EVIL IN YAML FILES.
+
 security:
     enable_authenticator_manager: true
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
@@ -9,7 +11,9 @@ security:
         app_user_provider:
             entity:
                 class: App\Entity\User
-                property: username
+                property: email
+        # used to reload user from session & other features (e.g. switch_user)
+        # used to reload user from session & other features (e.g. switch_user)
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -17,6 +21,11 @@ security:
         main:
             lazy: true
             provider: app_user_provider
+            custom_authenticator: App\Security\LoginAuthenticator
+            logout:
+                path: app_logout
+                # where to redirect after logout
+                target: accueil
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -27,8 +36,12 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/admin, roles: [ROLE_ADMIN, ROLE_MANAGER, ROLE_USER]}
+        - { path: ^/profile, roles: ROLE_USER }
+        # On peut créer les lignes qu'on veut, par exemple :
+        - { path: ^/accueilAdmin, roles: ROLE_ADMIN }
+        - { path: ^/accueil, roles: ROLE_USER }
+        - { path: ^/manage, roles: ROLE_MANAGER }
 
 when@test:
     security:
